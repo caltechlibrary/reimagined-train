@@ -1,0 +1,45 @@
+#cloud-config
+
+package_upgrade: true
+packages:
+  - adminer
+  - mysql-server
+  - openjdk-8-jre-headless
+  - unzip
+
+runcmd:
+  # Set up variables.
+  - export ARCHIVESSPACE_HOME=/opt/archivesspace
+  - export ARCHIVESSPACE_VERSION=v3.5.1
+  - export SOLR_HOME=/opt/solr/server/solr
+  - export SOLR_VERSION=8.11.4
+  - export MYSQL_CONNECTOR_JAVA_VERSION=8.4.0
+  # Install ArchivesSpace.
+  - curl --silent --location "https://github.com/archivesspace/archivesspace/releases/download/${ARCHIVESSPACE_VERSION}/archivesspace-${ARCHIVESSPACE_VERSION}.zip" --output "/var/tmp/archivesspace-${ARCHIVESSPACE_VERSION}.zip"
+  - unzip -q "/var/tmp/archivesspace-${ARCHIVESSPACE_VERSION}.zip" -d /opt
+  - rm /var/tmp/archivesspace-${ARCHIVESSPACE_VERSION}.zip
+  # Install ArchivesSpace plugins.
+  - git clone https://github.com/lyrasis/aspace-reindexer.git "$ARCHIVESSPACE_HOME/plugins/reindexer"
+  - git clone https://github.com/alexduryee/timewalk.git "$ARCHIVESSPACE_HOME/plugins/timewalk"
+  # Install Solr.
+  - curl --silent --location "https://www.apache.org/dyn/closer.lua/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz?action=download" --output "/var/tmp/solr-${SOLR_VERSION}.tgz"
+  - tar xzf /var/tmp/solr-${SOLR_VERSION}.tgz solr-${SOLR_VERSION}/bin/install_solr_service.sh --strip-components=2
+  - bash ./install_solr_service.sh /var/tmp/solr-${SOLR_VERSION}.tgz
+  - mkdir --parents "$SOLR_HOME/configsets/archivesspace/conf"
+  - cp "$ARCHIVESSPACE_HOME/solr/schema.xml" "$SOLR_HOME/configsets/archivesspace/conf/"
+  - cp "$ARCHIVESSPACE_HOME/solr/solrconfig.xml" "$SOLR_HOME/configsets/archivesspace/conf/"
+  - cp "$ARCHIVESSPACE_HOME/solr/stopwords.txt" "$SOLR_HOME/configsets/archivesspace/conf/"
+  - cp "$ARCHIVESSPACE_HOME/solr/synonyms.txt" "$SOLR_HOME/configsets/archivesspace/conf/"
+  - su --login solr --command "/opt/solr/bin/solr create -c archivesspace -d archivesspace"
+  - rm /var/tmp/solr-${SOLR_VERSION}.tgz
+  # Install AWS CLI.
+  - curl --silent --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" --output "/var/tmp/awscliv2.zip"
+  - unzip -q /var/tmp/awscliv2.zip
+  - rm /var/tmp/awscliv2.zip
+  - ./aws/install
+  - rm --recursive ./aws
+  # Install MySQL Connector/J.
+  - curl --silent --location "https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/${MYSQL_CONNECTOR_JAVA_VERSION}/mysql-connector-j-${MYSQL_CONNECTOR_JAVA_VERSION}.jar" --output "/opt/archivesspace/lib/mysql-connector-java-${MYSQL_CONNECTOR_JAVA_VERSION}.jar"
+  # Enable Adminer.
+  - a2enconf adminer
+  - systemctl reload apache2
