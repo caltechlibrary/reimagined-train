@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# THE FOLLOWING VARIABLES MUST BE SET IN export.sh
+
+export DB_NAME=example_name
+export ARK_URL_PREFIX=http://example.org
+
+export S3_BUCKET_NAME=example-bucket
+export AWS_PROFILE=example
