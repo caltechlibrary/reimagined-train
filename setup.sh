@@ -15,7 +15,8 @@ echo '# Custom Configuration' > /opt/archivesspace/config/config.rb
 {
     echo "AppConfig[:db_url] = 'jdbc:mysql://localhost:3306/${DB_NAME}?user=as&password=as123&useUnicode=true&characterEncoding=UTF-8'"
     echo 'AppConfig[:solr_url] = "http://localhost:8983/solr/archivesspace"'
-    echo 'AppConfig[:plugins] = ["local", "lcnaf", "reindexer", "timewalk"]'
+    echo '#AppConfig[:plugins] = ["local", "lcnaf", "reindexer", "timewalk"]'
+    echo 'AppConfig[:plugins] = ["local", "lcnaf", "timewalk"]'
     echo 'AppConfig[:reindex_on_startup] = true'
     echo 'AppConfig[:session_expire_after_seconds] = 604800'
     echo 'AppConfig[:arks_enabled] = true'
