@@ -39,7 +39,8 @@ if [ ! -f "$local_filepath" ]; then
         echo "😵 FAILED TO DOWNLOAD BACKUP DATABASE FROM S3."
         exit 1
     fi
-    mv "${tmp_dir}/${datestamp}.sql.gz" "$local_filepath"
+    cp "${tmp_dir}/${datestamp}.sql.gz" "$local_filepath"
+    rm -f "${tmp_dir}/${datestamp}.sql.gz"
 fi
 
 echo "RESETTING EXISTING DATABASE..."
