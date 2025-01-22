@@ -19,16 +19,17 @@ else
 fi
 multipass exec archivesspace -- sudo /opt/archivesspace/archivesspace.sh start
 
-local_ip=$(multipass info archivesspace | grep "IPv4" | awk -F " " '{print $NF}')
-echo "🧑‍💻 Staff Interface:"
-echo "http://${local_ip}:8080"
+echo "🌐 IP Address:"
+multipass info archivesspace | grep "IPv4" | awk -F " " '{print $NF}'
+echo "🧙 Staff Interface:"
+echo "http://archivesspace.local:8080"
 echo "🤷 Public Interface:"
-echo "http://${local_ip}:8081"
+echo "http://archivesspace.local:8081"
 echo "🌞 Solr Interface:"
-echo "http://${local_ip}:8983"
+echo "http://archivesspace.local:8983"
 echo "😺 OAI Interface:"
-echo "http://${local_ip}:8081"
+echo "http://archivesspace.local:8081"
 echo "🤖 API Interface:"
-echo "http://${local_ip}:8089"
+echo "http://archivesspace.local:8089"
 echo "🧙 Adminer (MySQL) Interface:"
-echo "http://${local_ip}/adminer"
+echo "http://archivesspace.local/adminer"
